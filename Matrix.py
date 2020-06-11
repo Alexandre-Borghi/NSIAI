@@ -1,6 +1,10 @@
 from operator import __getitem__
 
 
+def is_number(n):
+    return str(n).replace(".", "", 1).isdigit()
+
+
 class BadMatrixMultiplication(ArithmeticError):
     """
     A class representing the error that happens when trying to multiply 2 matrices that cannot be multiplied.
@@ -31,11 +35,8 @@ class Matrix:
 
             print(line)
 
-    def matrix_multiply(self, other):
-        self = Matrix.multiply(self, other)
-
     @classmethod
-    def multiply(cls, a, b):
+    def matrix_multiply(cls, a, b):
         if a.n != b.m:
             raise BadMatrixMultiplication(
                 f"Trying to multiply a {a.m}x{a.n} matrix with a {b.m}x{b.n} matrix."
@@ -50,7 +51,8 @@ class Matrix:
 
         return result_mat
 
-    def _scalar_multiply(self, other):
+    @classmethod
+    def scalar_multiply(cls, a, b):
         raise NotImplementedError(
             "Matrix scalar multiplication not defined yet.")
 
@@ -58,7 +60,43 @@ class Matrix:
         return self.data[offset]
 
     def __mul__(self, other):
-        if type(other) == Matrix:
-            Matrix.matrix_multiply(self, other)
-        else:
-            self._scalar_multiply(other)
+        if not is_number(other):
+            raise ArithmeticError(
+                "* operator is for scalar multiplication. If trying to matrix multiply, use the @ operator.")
+
+        return Matrix.scalar_multiply(self, other)
+
+    def __imul__(self, other):
+        if is_number(other):
+            raise ArithmeticError(
+                "*= operator is for scalar multiplication. If trying to matrix multiply, use the @= operator.")
+
+        return Matrix.scalar_multiply(self, other)
+
+    def __matmul__(self, other):
+        if type(other) != Matrix:
+            raise ArithmeticError(
+                "Trying to matrix multiply with a non-matrix object")
+
+        return Matrix.matrix_multiply(self, other)
+
+    def __imatmul__(self, other):
+        if type(other) != Matrix:
+            raise ArithmeticError(
+                "Trying to matrix multiply with a non-matrix object")
+
+        return Matrix.matrix_multiply(self, other)
+
+    def __eq__(self, other):
+        if type(other) != Matrix:
+            raise ArithmeticError(
+                "Trying to compare matrix with a non-matrix object")
+
+        return self.m == other.m and self.n == other.n and self.data == other.data
+
+    def __ne__(self, other):
+        if type(other) != Matrix:
+            raise ArithmeticError(
+                "Trying to compare matrix with a non-matrix object")
+
+        return self.m != other.m or self.n != other.n or self.data != other.data

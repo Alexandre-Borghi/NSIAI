@@ -30,6 +30,59 @@ class TestMatrix(unittest.TestCase):
             self.assertEqual(
                 matrix[0][0], value, "Matrix __getitem__ operator does not work properly.")
 
+    def test_MatrixMultiplication(self):
+        matrix1 = Matrix.Matrix(2, 2, init_value=0)
+        matrix2 = Matrix.Matrix(3, 2, init_value=0)
+
+        self.assertRaises(Matrix.BadMatrixMultiplication,
+                          lambda: matrix1 @ matrix2)
+
+        matrix1 = Matrix.Matrix(2, 2, init_value=0)
+        matrix2 = Matrix.Matrix(3, 2, init_value=0)
+
+        matrix2 @= matrix1
+
+        # The result of the multiplication is all zeros
+        result_matrix = Matrix.Matrix(3, 2, init_value=0)
+
+        self.assertEqual(matrix2, result_matrix)
+
+        matrix1 = Matrix.Matrix(3, 3)
+        matrix2 = Matrix.Matrix(3, 2)
+
+        matrix1[0][0] = 2.3
+        matrix1[0][1] = -4.12
+        matrix1[0][2] = 10
+        matrix1[1][0] = -6
+        matrix1[1][1] = 0.1
+        matrix1[1][2] = 3.14
+        matrix1[2][0] = 2.7
+        matrix1[2][1] = 7.77
+        matrix1[2][2] = -30
+
+        matrix1[0][0] = 3.33
+        matrix1[0][1] = -7.1
+        matrix1[1][0] = 6
+        matrix1[1][1] = 8.23
+        matrix1[2][0] = -5
+        matrix1[2][1] = 1.2
+
+        # The expected result
+        result_matrix = Matrix.Matrix(3, 2)
+
+        matrix2[0][0] = -67.06
+        matrix2[0][1] = -38.24
+        matrix2[1][0] = -35.08
+        matrix2[1][1] = 47.19
+        matrix2[2][0] = 205.61
+        matrix2[2][1] = 8.78
+
+        matrix_multiplied = matrix1 @ matrix2
+
+        matrix_multiplied.display()
+
+        self.assertEqual(matrix_multiplied, result_matrix)
+
 
 if __name__ == "__main__":
     unittest.main()
