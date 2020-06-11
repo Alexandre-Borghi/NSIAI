@@ -20,7 +20,8 @@ class Matrix:
         self.m = rows
         self.n = columns
 
-        self.data = [[init_value for n in range(self.n)] for _ in range(self.m)]
+        self.data = [[init_value for n in range(
+            self.n)] for _ in range(self.m)]
 
     def display(self):
         for row in range(self.m):
@@ -50,7 +51,8 @@ class Matrix:
         return result_mat
 
     def _scalar_multiply(self, other):
-        raise NotImplementedError("Matrix scalar multiplication not defined yet.")
+        raise NotImplementedError(
+            "Matrix scalar multiplication not defined yet.")
 
     def __getitem__(self, offset):
         return self.data[offset]
