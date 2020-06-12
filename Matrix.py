@@ -2,7 +2,7 @@ from operator import __getitem__
 
 
 def is_number(n):
-    return str(n).replace(".", "", 1).isdigit()
+    return str(n).replace(".", "", 1).replace("-", "", 1).isdigit()
 
 
 class BadMatrixMultiplication(ArithmeticError):
@@ -14,7 +14,7 @@ class BadMatrixMultiplication(ArithmeticError):
     pass
 
 
-class InvalidDataLengthError(ValueError):
+class InvalidDataSizeError(ValueError):
     """
     A class representing the error occuring when using
     set_data() and putting too much or not enough data
@@ -48,6 +48,10 @@ class Matrix:
 
     @classmethod
     def matrix_multiply(cls, a, b):
+        if type(b) != Matrix:
+            raise ArithmeticError(
+                "Trying to matrix multiply with a non-matrix object")
+
         if a.n != b.m:
             raise BadMatrixMultiplication(
                 f"Trying to multiply a {a.m}x{a.n} matrix with a {b.m}x{b.n} matrix.")
@@ -63,8 +67,23 @@ class Matrix:
 
     @classmethod
     def scalar_multiply(cls, a, b):
-        raise NotImplementedError(
-            "Matrix scalar multiplication not defined yet.")
+        """
+        This function returns matrix "a" multiplied by scalar "b"
+        """
+
+        if not is_number(b):
+            raise ArithmeticError(
+                "* operator is for scalar multiplication. If trying to matrix multiply, use the @ operator."
+            )
+
+        new_matrix = Matrix(a.m, a.n)
+        new_matrix.set_data_2d(a.data)
+
+        for i in range(new_matrix.m):
+            for j in range(new_matrix.n):
+                new_matrix[i][j] *= b
+
+        return new_matrix
 
     def set_data(self, new_data):
         """
@@ -78,47 +97,49 @@ class Matrix:
         if self.m * self.n < len(new_data):
             print(
                 f"Error : Too much data in array, for a {self.m}x{self.n} matrix, the length of the array should be {self.m*self.n}, but was {len(new_data)}.")
-            raise InvalidDataLengthError()
+            raise InvalidDataSizeError()
         elif self.m * self.n > len(new_data):
             print(
                 f"Error : Not enough data in array, for a {self.m}x{self.n} matrix, the length of the array should be {self.m*self.n}, but was {len(new_data)}")
-            raise InvalidDataLengthError()
+            raise InvalidDataSizeError()
 
         for i in range(self.m):
             for j in range(self.n):
                 self.data[i][j] = new_data[j + i * self.n]
 
+    def set_data_2d(self, new_data):
+        """
+        This function helps to set the data of the entire
+        matrix.
+
+        new_data is the 2D array with the new data, with
+        columns in rows.
+        """
+
+        if self.m * self.n < len(new_data) * len(new_data[0]):
+            print(
+                f"Error : Too much data in array, for a {self.m}x{self.n} matrix, the  array should be {self.m}x{self.n}, but was {len(new_data)}x{len(new_data[0])}.")
+            raise InvalidDataSizeError()
+        elif self.m * self.n > len(new_data) * len(new_data[0]):
+            print(
+                f"Error : Not enough data in array, for a {self.m}x{self.n} matrix, the  array should be {self.m}x{self.n}, but was {len(new_data)}x{len(new_data[0])}.")
+            raise InvalidDataSizeError()
+
+        self.data = new_data
+
     def __getitem__(self, offset):
         return self.data[offset]
 
     def __mul__(self, other):
-        if not is_number(other):
-            raise ArithmeticError(
-                "* operator is for scalar multiplication. If trying to matrix multiply, use the @ operator."
-            )
-
         return Matrix.scalar_multiply(self, other)
 
     def __imul__(self, other):
-        if not is_number(other):
-            raise ArithmeticError(
-                "*= operator is for scalar multiplication. If trying to matrix multiply, use the @= operator."
-            )
-
         return Matrix.scalar_multiply(self, other)
 
     def __matmul__(self, other):
-        if type(other) != Matrix:
-            raise ArithmeticError(
-                "Trying to matrix multiply with a non-matrix object")
-
         return Matrix.matrix_multiply(self, other)
 
     def __imatmul__(self, other):
-        if type(other) != Matrix:
-            raise ArithmeticError(
-                "Trying to matrix multiply with a non-matrix object")
-
         return Matrix.matrix_multiply(self, other)
 
     def __eq__(self, other):

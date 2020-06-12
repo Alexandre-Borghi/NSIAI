@@ -44,9 +44,9 @@ class TestMatrix(unittest.TestCase):
                 for j in range(matrix.n):
                     self.assertEqual(matrix[i][j], data[j + i * n])
 
-        self.assertRaises(Matrix.InvalidDataLengthError,
+        self.assertRaises(Matrix.InvalidDataSizeError,
                           lambda: matrix.set_data([1, 2, 3]))
-        self.assertRaises(Matrix.InvalidDataLengthError,
+        self.assertRaises(Matrix.InvalidDataSizeError,
                           lambda: matrix.set_data([1, 2, 3, 4, 5]))
 
     def test_MatrixMultiplication(self):
@@ -82,7 +82,18 @@ class TestMatrix(unittest.TestCase):
         self.assertEqual(matrix_multiplied, result_matrix)
 
     def test_MatrixScalarMultiplication(self):
-        pass
+        matrix = Matrix.Matrix(2, 2)
+        result_matrix = Matrix.Matrix(2, 2)
+
+        for data in [[1, 2, 3, 4], [-1, -2, -3, -4], [0.1, -5.2, 4.3, -0.5]]:
+            for scalar in [0.1, -1, 1, 2, 3, 0]:
+                matrix.set_data(data)
+                matrix *= scalar
+
+                result_matrix.set_data([n*scalar for n in data])
+
+                self.assertEqual(matrix, result_matrix,
+                                 "Failed scalar multiplication test.")
 
 
 if __name__ == "__main__":
