@@ -3,7 +3,6 @@ import Matrix
 
 
 class TestMatrix(unittest.TestCase):
-
     def test_MatrixCreation(self):
         matrix = Matrix.Matrix(2, 3)
 
@@ -18,7 +17,8 @@ class TestMatrix(unittest.TestCase):
             for i in range(2):
                 for j in range(3):
                     self.assertEqual(
-                        matrix[i][j], value, "Matrix init_value is not respected.")
+                        matrix[i][j], value, "Matrix init_value is not respected."
+                    )
 
     def test_MatrixGetItemOperator(self):
         matrix = Matrix.Matrix(1, 1)
@@ -28,7 +28,26 @@ class TestMatrix(unittest.TestCase):
         for value in [-203.56, -1, 0, 2, 35.27, 2358.111]:
             matrix[0][0] = value
             self.assertEqual(
-                matrix[0][0], value, "Matrix __getitem__ operator does not work properly.")
+                matrix[0][0],
+                value,
+                "Matrix __getitem__ operator does not work properly.",
+            )
+
+    def test_MatrixSetData(self):
+        m, n = 2, 2
+
+        matrix = Matrix.Matrix(m, n)
+
+        for data in [[1, 2, 3, 4], [0.1, 2.3, 1.4, -1.2]]:
+            matrix.set_data(data)
+            for i in range(matrix.m):
+                for j in range(matrix.n):
+                    self.assertEqual(matrix[i][j], data[j + i * n])
+
+        self.assertRaises(Matrix.InvalidDataSizeError,
+                          lambda: matrix.set_data([1, 2, 3]))
+        self.assertRaises(Matrix.InvalidDataSizeError,
+                          lambda: matrix.set_data([1, 2, 3, 4, 5]))
 
     def test_MatrixMultiplication(self):
         matrix1 = Matrix.Matrix(2, 2, init_value=0)
@@ -50,38 +69,31 @@ class TestMatrix(unittest.TestCase):
         matrix1 = Matrix.Matrix(3, 3)
         matrix2 = Matrix.Matrix(3, 2)
 
-        matrix1[0][0] = 2.3
-        matrix1[0][1] = -4.12
-        matrix1[0][2] = 10
-        matrix1[1][0] = -6
-        matrix1[1][1] = 0.1
-        matrix1[1][2] = 3.14
-        matrix1[2][0] = 2.7
-        matrix1[2][1] = 7.77
-        matrix1[2][2] = -30
-
-        matrix1[0][0] = 3.33
-        matrix1[0][1] = -7.1
-        matrix1[1][0] = 6
-        matrix1[1][1] = 8.23
-        matrix1[2][0] = -5
-        matrix1[2][1] = 1.2
+        matrix1.set_data([2, -4.1, 10, -6, 1, 3, 3, 7, -30])
+        matrix2.set_data([3, -7, 6, 8, -5, 1])
 
         # The expected result
         result_matrix = Matrix.Matrix(3, 2)
 
-        matrix2[0][0] = -67.06
-        matrix2[0][1] = -38.24
-        matrix2[1][0] = -35.08
-        matrix2[1][1] = 47.19
-        matrix2[2][0] = 205.61
-        matrix2[2][1] = 8.78
+        result_matrix.set_data([-68.6, -36.8, -27, 53, 201, 5])
 
         matrix_multiplied = matrix1 @ matrix2
 
-        matrix_multiplied.display()
-
         self.assertEqual(matrix_multiplied, result_matrix)
+
+    def test_MatrixScalarMultiplication(self):
+        matrix = Matrix.Matrix(2, 2)
+        result_matrix = Matrix.Matrix(2, 2)
+
+        for data in [[1, 2, 3, 4], [-1, -2, -3, -4], [0.1, -5.2, 4.3, -0.5]]:
+            for scalar in [0.1, -1, 1, 2, 3, 0]:
+                matrix.set_data(data)
+                matrix *= scalar
+
+                result_matrix.set_data([n*scalar for n in data])
+
+                self.assertEqual(matrix, result_matrix,
+                                 "Failed scalar multiplication test.")
 
 
 if __name__ == "__main__":
