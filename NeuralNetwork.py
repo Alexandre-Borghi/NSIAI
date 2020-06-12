@@ -75,8 +75,6 @@ class NeuralNetwork:
         for i in range(self.layers_count - 1):
             self.layers[i + 1] = self.weights[i] @ self.layers[i]
 
-            self.layers[i + 1].display()
             self.activate(self.layers[i + 1])
-            self.layers[i + 1].display()
 
         return self.outputs
