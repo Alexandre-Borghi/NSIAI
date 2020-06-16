@@ -21,11 +21,11 @@ class NeuralNetwork:
     This class represents a genenal neural network.
     """
 
-    def __init__(self, structure, activation_function=sigmoid):
+    def __init__(self, structure, learning_rate, activation_function=sigmoid):
         """
         Creates the neural network
 
-        "structure" is a tuple, with each element being the number of neurons
+        "structure" is an array, with each element being the number of neurons
         in each layer. Needs at least 2 elements for inputs and outputs.
         """
 
@@ -33,6 +33,7 @@ class NeuralNetwork:
         self.structure = structure
         self.layers_count = len(self.structure)
 
+        self.lr = learning_rate
         self.activation_function = activation_function
 
         # Creating layers
@@ -44,9 +45,15 @@ class NeuralNetwork:
             for i in range(self.layers_count - 1)
         ]
 
-        # Randomly initializing weights
+        # Creating biases
+        self.biases = [Matrix(self.layers[i].m, 1) for i in range(1, self.layers_count)]
+
+        # Randomly initializing weights and biases
         for weight_mat in self.weights:
             weight_mat.set_data([random() for _ in range(weight_mat.m * weight_mat.n)])
+
+        for biases_mat in self.biases:
+            biases_mat.set_data([random() for _ in range(biases_mat.m * biases_mat.n)])
 
     @property
     def outputs(self):
@@ -73,8 +80,36 @@ class NeuralNetwork:
         self.layers[0].set_data(inputs)
 
         for i in range(self.layers_count - 1):
-            self.layers[i + 1] = self.weights[i] @ self.layers[i]
+            self.layers[i + 1] = self.weights[i] @ self.layers[i] + self.biases[i]
 
             self.activate(self.layers[i + 1])
 
         return self.outputs
+
+    def train(self, inputs, targets):
+        self.guess(inputs).data
+
+        # Output layer
+
+        targets_mat = Matrix(self.outputs.m, self.outputs.n)
+        targets_mat.set_data(targets)
+
+        error = targets_mat - self.outputs
+        self.weights[self.layers_count - 2] += Matrix.element_multiply(
+            error * self.lr,
+            Matrix.element_multiply(
+                self.outputs,
+                Matrix(self.outputs.m, self.outputs.n, init_value=1) - self.outputs,
+            ),
+        ) @ Matrix.matrix_transpose(self.layers[self.layers_count - 2])
+
+        for layer in range(self.layers_count - 2, 0, -1):
+            error = Matrix.matrix_transpose(self.weights[layer]) @ error
+            self.weights[layer - 1] += Matrix.element_multiply(
+                error * self.lr,
+                Matrix.element_multiply(
+                    self.layers[layer],
+                    Matrix(self.layers[layer].m, self.layers[layer].n, init_value=1)
+                    - self.layers[layer],
+                ),
+            ) @ Matrix.matrix_transpose(self.layers[layer - 1])
