@@ -144,6 +144,15 @@ class TestMatrix(unittest.TestCase):
 
         self.assertEqual(matrix1, result_mat)
 
+    def test_MatrixTranspose(self):
+        matrix = Matrix.Matrix(2, 3)
+        matrix.set_data([1, 2, 3, 0, -6, 7])
+
+        transposed_matrix = Matrix.Matrix(3, 2)
+        transposed_matrix.set_data([1, 0, 2, -6, 3, 7])
+
+        self.assertEqual(Matrix.Matrix.matrix_transpose(matrix), transposed_matrix)
+
 
 if __name__ == "__main__":
     unittest.main()

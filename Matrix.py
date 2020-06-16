@@ -114,6 +114,16 @@ class Matrix:
 
         return Matrix.scalar_multiply(matrix, -1)
 
+    @classmethod
+    def matrix_transpose(cls, matrix):
+        transposed_matrix = Matrix(matrix.n, matrix.m)
+
+        for i in range(transposed_matrix.m):
+            for j in range(transposed_matrix.n):
+                transposed_matrix[i][j] = matrix.data[j][i]
+
+        return transposed_matrix
+
     def set_data(self, new_data):
         """
         This function helps to set the data of the entire
