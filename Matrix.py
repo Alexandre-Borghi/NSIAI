@@ -85,12 +85,30 @@ class Matrix:
         return new_matrix
 
     @classmethod
+    def element_multiply(cls, a, b):
+        """
+        This function returns matrix "a" element-wise multiplied by matrix "b"
+        """
+
+        if a.m != b.m or a.n != b.n:
+            raise ArithmeticError()
+
+        new_matrix = Matrix(a.m, a.n)
+        new_matrix.set_data_2d(a.data)
+
+        for i in range(new_matrix.m):
+            for j in range(new_matrix.n):
+                new_matrix[i][j] *= b[i][j]
+
+        return new_matrix
+
+    @classmethod
     def addition(cls, a, b):
         """
         "a" and "b" are matrices. Returns a + b.
         """
 
-        if a.m != b.m or a.n != b.m:
+        if a.m != b.m or a.n != b.n:
             raise ArithmeticError()
 
         result_mat = Matrix(a.m, a.n)

@@ -153,6 +153,18 @@ class TestMatrix(unittest.TestCase):
 
         self.assertEqual(Matrix.Matrix.matrix_transpose(matrix), transposed_matrix)
 
+    def test_MatrixElementMultiplication(self):
+        matrix1 = Matrix.Matrix(2, 1)
+        matrix2 = Matrix.Matrix(2, 1)
+
+        matrix1.set_data([1, 2])
+        matrix2.set_data([3, 4])
+
+        result_mat = Matrix.Matrix(2, 1)
+        result_mat.set_data([3, 8])
+
+        self.assertEqual(Matrix.Matrix.element_multiply(matrix1, matrix2), result_mat)
+
 
 if __name__ == "__main__":
     unittest.main()
