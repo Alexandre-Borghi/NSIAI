@@ -35,8 +35,7 @@ class Matrix:
         self.m = rows
         self.n = columns
 
-        self.data = [[init_value for n in range(
-            self.n)] for _ in range(self.m)]
+        self.data = [[init_value for n in range(self.n)] for _ in range(self.m)]
 
     def display(self):
         for row in range(self.m):
@@ -49,12 +48,12 @@ class Matrix:
     @classmethod
     def matrix_multiply(cls, a, b):
         if type(b) != Matrix:
-            raise ArithmeticError(
-                "Trying to matrix multiply with a non-matrix object")
+            raise ArithmeticError("Trying to matrix multiply with a non-matrix object")
 
         if a.n != b.m:
             raise BadMatrixMultiplication(
-                f"Trying to multiply a {a.m}x{a.n} matrix with a {b.m}x{b.n} matrix.")
+                f"Trying to multiply a {a.m}x{a.n} matrix with a {b.m}x{b.n} matrix."
+            )
 
         result_mat = Matrix(a.m, b.n, 0)
 
@@ -85,6 +84,36 @@ class Matrix:
 
         return new_matrix
 
+    @classmethod
+    def addition(cls, a, b):
+        """
+        "a" and "b" are matrices. Returns a + b.
+        """
+
+        if a.m != b.m or a.n != b.m:
+            raise ArithmeticError()
+
+        result_mat = Matrix(a.m, a.n)
+        result_mat.set_data_2d(a.data)
+
+        for i in range(result_mat.m):
+            for j in range(result_mat.n):
+                result_mat[i][j] += b[i][j]
+
+        return result_mat
+
+    @classmethod
+    def subtract(cls, a, b):
+        return a + (-b)
+
+    @classmethod
+    def negate(cls, matrix):
+        """
+        This method negates matrix "matrix"
+        """
+
+        return Matrix.scalar_multiply(matrix, -1)
+
     def set_data(self, new_data):
         """
         This function helps to set the data of the entire
@@ -96,11 +125,13 @@ class Matrix:
 
         if self.m * self.n < len(new_data):
             print(
-                f"Error : Too much data in array, for a {self.m}x{self.n} matrix, the length of the array should be {self.m*self.n}, but was {len(new_data)}.")
+                f"Error : Too much data in array, for a {self.m}x{self.n} matrix, the length of the array should be {self.m*self.n}, but was {len(new_data)}."
+            )
             raise InvalidDataSizeError()
         elif self.m * self.n > len(new_data):
             print(
-                f"Error : Not enough data in array, for a {self.m}x{self.n} matrix, the length of the array should be {self.m*self.n}, but was {len(new_data)}")
+                f"Error : Not enough data in array, for a {self.m}x{self.n} matrix, the length of the array should be {self.m*self.n}, but was {len(new_data)}"
+            )
             raise InvalidDataSizeError()
 
         for i in range(self.m):
@@ -118,17 +149,33 @@ class Matrix:
 
         if self.m * self.n < len(new_data) * len(new_data[0]):
             print(
-                f"Error : Too much data in array, for a {self.m}x{self.n} matrix, the  array should be {self.m}x{self.n}, but was {len(new_data)}x{len(new_data[0])}.")
+                f"Error : Too much data in array, for a {self.m}x{self.n} matrix, the  array should be {self.m}x{self.n}, but was {len(new_data)}x{len(new_data[0])}."
+            )
             raise InvalidDataSizeError()
         elif self.m * self.n > len(new_data) * len(new_data[0]):
             print(
-                f"Error : Not enough data in array, for a {self.m}x{self.n} matrix, the  array should be {self.m}x{self.n}, but was {len(new_data)}x{len(new_data[0])}.")
+                f"Error : Not enough data in array, for a {self.m}x{self.n} matrix, the  array should be {self.m}x{self.n}, but was {len(new_data)}x{len(new_data[0])}."
+            )
             raise InvalidDataSizeError()
 
-        self.data = new_data
+        for i in range(self.m):
+            for j in range(self.n):
+                self.data[i][j] = new_data[i][j]
 
     def __getitem__(self, offset):
         return self.data[offset]
+
+    def __add__(self, other):
+        return Matrix.addition(self, other)
+
+    def __iadd__(self, other):
+        return Matrix.addition(self, other)
+
+    def __sub__(self, other):
+        return Matrix.subtract(self, other)
+
+    def __isub__(self, other):
+        return Matrix.subtract(self, other)
 
     def __mul__(self, other):
         return Matrix.scalar_multiply(self, other)
@@ -142,16 +189,17 @@ class Matrix:
     def __imatmul__(self, other):
         return Matrix.matrix_multiply(self, other)
 
+    def __neg__(self):
+        return Matrix.negate(self)
+
     def __eq__(self, other):
         if type(other) != Matrix:
-            raise ArithmeticError(
-                "Trying to compare matrix with a non-matrix object")
+            raise ArithmeticError("Trying to compare matrix with a non-matrix object")
 
         return (self.m == other.m) and (self.n == other.n) and (self.data == other.data)
 
     def __ne__(self, other):
         if type(other) != Matrix:
-            raise ArithmeticError(
-                "Trying to compare matrix with a non-matrix object")
+            raise ArithmeticError("Trying to compare matrix with a non-matrix object")
 
         return self.m != other.m or self.n != other.n or self.data != other.data

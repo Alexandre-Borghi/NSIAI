@@ -6,10 +6,8 @@ class TestMatrix(unittest.TestCase):
     def test_MatrixCreation(self):
         matrix = Matrix.Matrix(2, 3)
 
-        self.assertEqual(
-            matrix.m, 2, "Matrix does not have the good amount of lines.")
-        self.assertEqual(
-            matrix.n, 3, "Matrix does not have the good amount of rows.")
+        self.assertEqual(matrix.m, 2, "Matrix does not have the good amount of lines.")
+        self.assertEqual(matrix.n, 3, "Matrix does not have the good amount of rows.")
 
         for value in [0, -1, 10, 3.141592, 2.718281828]:
             matrix = Matrix.Matrix(2, 3, init_value=value)
@@ -44,17 +42,18 @@ class TestMatrix(unittest.TestCase):
                 for j in range(matrix.n):
                     self.assertEqual(matrix[i][j], data[j + i * n])
 
-        self.assertRaises(Matrix.InvalidDataSizeError,
-                          lambda: matrix.set_data([1, 2, 3]))
-        self.assertRaises(Matrix.InvalidDataSizeError,
-                          lambda: matrix.set_data([1, 2, 3, 4, 5]))
+        self.assertRaises(
+            Matrix.InvalidDataSizeError, lambda: matrix.set_data([1, 2, 3])
+        )
+        self.assertRaises(
+            Matrix.InvalidDataSizeError, lambda: matrix.set_data([1, 2, 3, 4, 5])
+        )
 
     def test_MatrixMultiplication(self):
         matrix1 = Matrix.Matrix(2, 2, init_value=0)
         matrix2 = Matrix.Matrix(3, 2, init_value=0)
 
-        self.assertRaises(Matrix.BadMatrixMultiplication,
-                          lambda: matrix1 @ matrix2)
+        self.assertRaises(Matrix.BadMatrixMultiplication, lambda: matrix1 @ matrix2)
 
         matrix1 = Matrix.Matrix(2, 2, init_value=0)
         matrix2 = Matrix.Matrix(3, 2, init_value=0)
@@ -90,10 +89,60 @@ class TestMatrix(unittest.TestCase):
                 matrix.set_data(data)
                 matrix *= scalar
 
-                result_matrix.set_data([n*scalar for n in data])
+                result_matrix.set_data([n * scalar for n in data])
 
-                self.assertEqual(matrix, result_matrix,
-                                 "Failed scalar multiplication test.")
+                self.assertEqual(
+                    matrix, result_matrix, "Failed scalar multiplication test."
+                )
+
+    def test_MatrixAdd(self):
+        matrix1 = Matrix.Matrix(2, 2, init_value=1)
+        matrix2 = Matrix.Matrix(3, 2, init_value=1)
+
+        self.assertRaises(ArithmeticError, lambda: matrix1 + matrix2)
+
+        matrix2 = Matrix.Matrix(2, 2)
+        result_mat = Matrix.Matrix(2, 2)
+
+        matrix1.set_data([2.7, 1, 5.6, 3])
+        matrix2.set_data([4, 1.2, 5, 3.7])
+        result_mat.set_data([6.7, 2.2, 10.6, 6.7])
+
+        added_matrix = Matrix.Matrix(2, 2)
+
+        added_matrix = matrix1 + matrix2
+
+        self.assertEqual(added_matrix, result_mat)
+
+        matrix1 += matrix2
+
+        self.assertEqual(matrix1, result_mat)
+
+    def test_MatrixNeg(self):
+        matrix = Matrix.Matrix(2, 2)
+        result_matrix = Matrix.Matrix(2, 2)
+
+        matrix.set_data([1, 2, -3, -4])
+        result_matrix.set_data([-1, -2, 3, 4])
+
+        self.assertEqual(-matrix, result_matrix)
+
+    def test_MatrixSub(self):
+        matrix1 = Matrix.Matrix(2, 2)
+        matrix2 = Matrix.Matrix(2, 2)
+
+        matrix1.set_data([-1, 2, -3, 4])
+        matrix2.set_data([-5, 6, 7, -8])
+
+        result_mat = Matrix.Matrix(2, 2)
+
+        result_mat.set_data([4, -4, -10, 12])
+
+        self.assertEqual(matrix1 - matrix2, result_mat)
+
+        matrix1 -= matrix2
+
+        self.assertEqual(matrix1, result_mat)
 
 
 if __name__ == "__main__":
