@@ -4,32 +4,45 @@ import os
 import pygame
 import random
 import time
+
 # Our Function
 def percentage(percent, whole):
     return int((percent * whole) / 100.0)
 
+#Our Classes
 class Player():
     def __init__(self):
         self.score = 0
 
 class Plateform(pygame.sprite.Sprite):
     #This class define platforms
-    
+
     def __init__(self):
-        self.speed = percentage(2,y_GameSurface)
+        self.speed = percentage(4,y_GameSurface)
         self.image = pygame.image.load(os.path.join(current_path, 'plateform.png'))
         self.rect = self.image.get_rect()
         self.rect.x = percentage(90, x_GameSurface)
         self.rect.y = percentage(38, y_GameSurface)
-    
+
     def move_up(self):
+        if self.speed < 0 :
+            self.speed *= -1
+        print(f'speed: {self.speed}')
         if self.rect.y + self.speed > percentage(2.7, y_GameSurface):
             self.rect.y -= self.speed
             #print(f"Y: {plateform.rect.y}")
+
     def move_down(self):
+        if self.speed > 0 :
+            self.speed *= -1
+        print(f'speed: {self.speed}')
         if self.rect.y - self.speed < percentage(68, y_GameSurface):
-            self.rect.y += self.speed
+            self.rect.y -= self.speed
             #print(f"Y: {plateform.rect.y}")
+
+    def position_start(self, x):
+        self.rect.x = percentage(x, x_GameSurface)
+        self.rect.y = percentage(38, y_GameSurface)
 
 class Ball(pygame.sprite.Sprite):
     # This class define the ball
@@ -39,7 +52,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.y = percentage(47, y_GameSurface)
         self.rect.x = percentage(random.choice([14,86]), x_GameSurface)
-        self.speed_x = percentage(0.2, x_GameSurface)
+        self.speed_x = percentage(0.19, x_GameSurface)
         self.speed_y = percentage(0.4, y_GameSurface)
 
 # Our Variables
@@ -73,15 +86,18 @@ GameSurface = pygame.Surface((x_GameSurface, y_GameSurface))
 #Game loop
 running = True
 while running :
-    
+
     pygame.display.update()
-    GameSurface.fill((255,255,255))
+    GameSurface.fill((0,0,0))
 
     #Blit items and surface
-    GameSurface.blit(plateform.image, plateform.rect)
-    GameSurface.blit(plateform2.image, plateform2.rect)
-    GameSurface.blit(ball.image, ball.rect)
-    Window.blit(GameSurface, (0,0))
+    def blit_items():
+        GameSurface.blit(plateform.image, plateform.rect)
+        GameSurface.blit(plateform2.image, plateform2.rect)
+        GameSurface.blit(ball.image, ball.rect)
+        Window.blit(GameSurface, (0,0))
+
+    blit_items()
 
     #Ball move
     if ball.rect.x > plateform2.rect.x and ball.rect.x < plateform.rect.x:
@@ -94,25 +110,35 @@ while running :
             ball.speed_x *= -1
             ball.rect.x += ball.speed_x
             ball.rect.y += ball.speed_y
+            if ball.rect.x > percentage(50, x_GameSurface):
+                ball.rect.y += plateform.speed
+            else:
+                ball.rect.y += plateform2.speed
             #print(f'collision: speed_y= {ball.speed_y} ')
 
         if ball.rect.y < percentage(2.7, y_GameSurface) or ball.rect.y > percentage(68, y_GameSurface):
             ball.speed_y *= -1
-    
+
     elif ball.rect.x <= plateform2.rect.x:
         player2.score += 1
-        print(f'Les scores sont: {player1.score} point(s) pour le joueur de gauche et {player2.score} pour le joueur de droite')
+        print(f'The scores are: {player1.score} point(s) for the left player and {player2.score} point(s) for the right player.')
         ball.rect.y = percentage(47, y_GameSurface)
         ball.rect.x = percentage(random.choice([14,86]), x_GameSurface)
+        plateform.position_start(90)
+        plateform2.position_start(10)
+        blit_items()
         pygame.display.update()
         time.sleep(1)
         #print (f'X: {ball.rect.x}   |   Y: {ball.rect.y}')
 
     elif ball.rect.x >= plateform.rect.x:
         player1.score += 1
-        print(f'Les scores sont: {player1.score} point(s) pour le joueur de gauche et {player2.score} pour le joueur de droite')
+        print(f'The scores are: {player1.score} point(s) for the left player and {player2.score} point(s) for the right player.')
         ball.rect.y = percentage(47, y_GameSurface)
         ball.rect.x = percentage(random.choice([14,86]), x_GameSurface)
+        plateform.position_start(90)
+        plateform2.position_start(10)
+        blit_items()
         pygame.display.update()
         time.sleep(1)
         #print (f'X: {ball.rect.x}   |   Y: {ball.rect.y}')
