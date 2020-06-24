@@ -85,7 +85,6 @@ brick_rect_y = 0
 keys_pressed = {}
 game_is_playing = False
 game_is_training = False
-
 #Our items
 plateform = Plateform()
 plateform2 = Plateform()
@@ -97,6 +96,7 @@ player2 = Player()
 banner = pygame.image.load(os.path.join(current_path, 'banner.png'))
 play = Play()
 training = Train()
+background = pygame.image.load(os.path.join(current_path,'background.jpg'))
 
 #Graphic interface
 pygame.init()
@@ -112,7 +112,7 @@ running = True
 while running :
 
     pygame.display.update()
-    GameSurface.fill((255,255,255))
+    GameSurface.blit(background, (0,0))
 
     if game_is_playing:
         #Blit items and surface
