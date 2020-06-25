@@ -1,3 +1,8 @@
 .vscode
 .mypy_cache
 __pycache__
+mnist
+main.py
+test.jpg
+test.csv
+activity

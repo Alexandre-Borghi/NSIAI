@@ -2,7 +2,7 @@ from operator import __getitem__
 
 
 def is_number(n):
-    return str(n).replace(".", "", 1).replace("-", "", 1).isdigit()
+    return str(n).replace(".", "", 1).replace("-", "", 1).replace("e", "", 1).isdigit()
 
 
 class BadMatrixMultiplication(ArithmeticError):
